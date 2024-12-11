@@ -1,0 +1,138 @@
+<style>
+
+body{
+    margin: 0;
+    padding: 0;
+    font-family: Verdana, Tahoma, sans-serif;
+}
+
+* {
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 400;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+h2 {
+    font-size: 20px;
+    color: #868686;
+    font-weight: 450;
+}
+
+h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+p {
+    font-size: 16px;
+    margin: 0;
+}
+
+/**position of the map on the page**/
+#map {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    bottom: 0px;
+    width: 80%;
+    height: 100%;
+}
+
+.map-overlay {
+    position: absolute;
+    top: 0px;
+    bottom: 0;
+    right: 0;
+    background: #ffffff;
+    margin-right: 0px;
+    overflow: auto; /**for scrolling**/
+    border-radius: 0px;
+    width: 20%;
+    height: 100%;
+}
+
+.map-overlay-content {
+    margin-left: 10px;
+    padding-right: 15px;
+}
+
+.footer {
+    display: flex; /**/
+    justify-content: space-between; /*ensures logo stay on the left and mentu stays on the right*/
+    align-items: center;
+    background-color: #ffffff;
+    padding: 0 0px;
+    position: fixed; /*make navbar stays on top when scrolling*/
+    bottom: 0;
+    height:100px;
+    right: 0px;
+    width: 20%;
+    z-index: 999; /*ensure above other element (like arrange or order)*/
+}
+
+
+.logo{
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    bottom: 5px;
+
+}
+
+.footer .logo img {
+    height: 70px;
+    width: auto;
+    bottom: 5px;
+}
+
+.region-select {
+    margin-top:30px;
+    font-size: 16px;
+    height: 40px;
+    width: 100%;
+    border-width: 1px;
+    font-family: inherit;
+    border-radius: 4px;
+    background-color: #ffffff;
+    border-color: #dfdddd;
+}
+
+#slider {
+    margin-top: 30px;
+}
+
+#speed-limit-slider {
+    width: 100%;
+    cursor: grab;
+}
+
+.slider-number{
+    display: flex;
+    justify-content: space-between;
+}
+
+#speed-limit-slider::-webkit-slider-runnable-track{
+    background: linear-gradient(to right, #deebf7, #08306b);
+    border-radius: 9px;
+    border-color: #dfdddd;
+    border-width: 15px;
+}
+
+.info {
+    margin-top: 30px; /*giving space with previous section*/
+}
+
+.info-row{
+    display: flex; /*to make the continer into a flex container*/
+    justify-content: space-between; /*to distribute the container content equally so h3 will align in left while p aling in right*/
+    align-items: center;  /*align vertically in the cneter*/
+    margin-bottom: 15px; /*giving space between line*/
+}
+
+
+
