@@ -5,7 +5,7 @@
     <meta charset="utf-8"> 
     <title></title>
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css' rel='stylesheet' />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css' rel='stylesheet'/>
     
     <!--Adding Geocoder script-->
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1-dev/mapbox-gl-geocoder.min.js'></script>
@@ -24,7 +24,7 @@
             <h1>SPEEDING BEHAVIOUR</h1>
         </div>
         <div class="nav-content">
-            <a class="active" href="#map">Map</a>
+            <a class="active" data-target="maps" href="#map">Map</a>
             <a class="nav-link" data-target="methods" href="#methods">Methods</a>
             <a class="nav-link" data-target="references" href="#references">References</a>
             <a class="nav-link" data-target="acknowledgements" href="#acknowledgements">Acknowledgements</a>
@@ -63,29 +63,24 @@
             </div>
 
             <div id="slider">
-                <h2>Speed Limit: <label id="speed-limit">70</label> MPH</h2>
-                <input type="range" id="speed-limit-slider" name="speed-slider" min="0" max="70" value="70" step="10" />
+                <h2>Adherence rate  &le; <label id="speed-limit">100</label>%</h2>
+                <input type="range" id="speed-limit-slider" name="speed-slider" min="20" max="100" value="100" step="10" />
                 <div class="slider-number">
-                    <p>0</p>
-                    <p>10</p>
                     <p>20</p>
                     <p>30</p>
                     <p>40</p>
                     <p>50</p>
                     <p>60</p>
                     <p>70</p>
+                    <p>80</p>
+                    <p>90</p>
+                    <p>100</p>
                 </div>
             </div>
             
     
             <div id="info" class="info">
                 <div id="info-data">
-                    <div class="info-row">
-                        <h3>Speed Limit MPH: </h3><p></p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Speed Limit Group: </h3><p></p>
-                    </div>
                     <div class="info-row">
                         <h3>Link ADH Rate: </h3><p></p>
                     </div>
@@ -199,7 +194,7 @@
         map.on('load', () => {
             map.addSource('westyorkshire',{
                 type: 'vector',
-                url: 'mapbox://hilmanpr21.56nsaicj',
+                url: 'mapbox://hilmanpr21.8d0rl1bk',
                 promoteId: 'TOID' // add this to promote TOID as unique identifier
             });
 
@@ -209,17 +204,19 @@
                 id: 'westyorkshire_speed_limit',
                 type: 'line',
                 source: 'westyorkshire',
-                'source-layer': 'westyorkshire-5knkfh',
+                'source-layer': 'westyorkshire-9lff31',
                 paint: {
                     'line-color': ['interpolate', ['linear'],
-                        ['get', 'speedLimit_mph'],
-                        10, '#e7e1ef',
-                        20, '#d4b9da',
-                        30, '#c994c7',
-                        40, '#df65b0',
-                        50, '#e7298a',
-                        60, '#ce1256',
-                        70, '#91003f'
+                        ['get', 'link_adhrate'],
+                        20, '#c51b7d',
+                        30, '#de77ae',
+                        40, '#f1b6da',
+                        50, '#fde0ef',
+                        60, '#e6f5d0',
+                        70, '#b8e186',
+                        80, '#7fbc41',
+                        90, '#4d9221',
+                        100, '#276419'
                     ], 
                     'line-opacity': 1, 
                     'line-width': [
@@ -235,6 +232,7 @@
         // Set Cursor style on the map
         map.getCanvas().style.cursor = 'default';
 
+        // HOVER
         // Add hover effect
         map.on('mousemove', 'westyorkshire_speed_limit', (e) => {
             //get the feature ID
@@ -243,7 +241,7 @@
             // if hovered features changes, update feature state
             if (hoveredFeatureId !== null && hoveredFeatureId !== featureId) {
                 map.setFeatureState(
-                    { source: 'westyorkshire', sourceLayer: 'westyorkshire-5knkfh', id: hoveredFeatureId},
+                    { source: 'westyorkshire', sourceLayer: 'westyorkshire-9lff31', id: hoveredFeatureId},
                     {hover: false}
                 );
             }
@@ -251,7 +249,7 @@
             hoveredFeatureId = featureId;
 
             map.setFeatureState(
-                { source: 'westyorkshire', sourceLayer: 'westyorkshire-5knkfh', id: hoveredFeatureId},
+                { source: 'westyorkshire', sourceLayer: 'westyorkshire-9lff31', id: hoveredFeatureId},
                 {hover: true}
             );
         });
@@ -260,7 +258,7 @@
         map.on('mouseleave', 'westyorkshire_speed_limit', () => {
             if (hoveredFeatureId !== null) {
                 map.setFeatureState(
-                    { source: 'westyorkshire', sourceLayer: 'westyorkshire-5knkfh', id: hoveredFeatureId },
+                    { source: 'westyorkshire', sourceLayer: 'westyorkshire-9lff31', id: hoveredFeatureId },
                     { hover: false }
                 );
             }
@@ -281,12 +279,6 @@
             document.getElementById('info-data').innerHTML=
             speedData.length
             ?`<div class="info-row">
-                        <h3>Speed Limit MPH: </h3><p>${speedData[0].properties.speedLimit_mph}</p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Speed Limit Group: </h3><p>${speedData[0].properties.speedLimit_group}</p>
-                    </div>
-                    <div class="info-row">
                         <h3>Link ADH Rate: </h3><p>${speedData[0].properties.link_adhrate}</p>
                     </div>
                     <div class="info-row">
@@ -303,15 +295,8 @@
             </div>
             ` //Set the content on how the div want to be overwrite when hover
             : 
-
             //when normal or not hovered
             `<div class="info-row">
-                        <h3>Speed Limit MPH: </h3><p></p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Speed Limit Group: </h3><p></p>
-                    </div>
-                    <div class="info-row">
                         <h3>Link ADH Rate: </h3><p></p>
                     </div>
                     <div class="info-row">
@@ -328,13 +313,14 @@
                     </div>`;
         });
 
-        // Add event listener for speeding limit
+        // Adherence Slider
+        // Add event listener for adherence slider
         document.getElementById('speed-limit-slider').addEventListener('input', (event) => {
             const speed = parseInt(event.target.value);
             // To filter the map value '<=' meaning less or equals
             // 'westyorkshire_speed_limit' is the map layer
-            // 'speedLimit_mph'is the column in the tileset
-            map.setFilter('westyorkshire_speed_limit', ['<=', ['get', 'speedLimit_mph'], speed]);
+            // 'link_adhrate'is the column in the tileset that represent ADH (adharance) rate
+            map.setFilter('westyorkshire_speed_limit', ['<=', ['get', 'link_adhrate'], speed]);
         
             // to print the value we are have in the slider
             // meaning change the label that has 'speed-limit' ID with value stored under 'speed' const
@@ -393,18 +379,25 @@
         const overlay = document.getElementById('muted-overlay'); //select element with id 'muted-overlay' 
         const popups = document.querySelectorAll('.popup-content'); //selecting the class popup-content
         const closeButtons = document.querySelectorAll('.close-btn');
+        const mapLink = document.querySelector('a[href="#map"]'); //select the "map" navlink
 
         //Function to show a pop-up
         function showPopup(target) {
             const popup = document.getElementById(`popup-${target}`);
-            popup.style.display = 'block';
-            overlay.style.display = 'block'
+            if (popup) {
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+            }
         }
 
         //Function to hide all pop-ups
         function hidePopups() {
             popups.forEach(popup => popup.style.display = 'none');
             overlay.style.display = 'none';
+
+            //reset active class for all nav link (nav bar) and activate "map"
+            document.querySelectorAll('.nav-content a').forEach(navLink => navLink.classList.remove('active'));
+            
         }
 
         //attach click listener to nav links
@@ -414,13 +407,13 @@
                 const target = e.target.getAttribute('data-target');
 
                 
-                hidePopups();
-                showPopup(target);
+                hidePopups(); //close any open popups
 
-                // remove 'active' class from all nav links
-                document.querySelectorAll('.nav-content a').forEach((navLink) => {
-                    navLink.classList.remove('active')
-                });
+                if (target) {
+                    showPopup(target); //to show the target popup
+                    link.classList.add('active'); //Set the clicked link as active
+                }
+
 
                 // add 'active' to the clisked links
                 link.classList.add('active');
@@ -430,13 +423,25 @@
 
         // Close button on navigation popup
         closeButtons.forEach(button => {
-            button.addEventListener('click', hidePopups);
+            button.addEventListener('click', () => {
+                hidePopups(); //close popups
+                mapLink.classList.add('active');
+
+            });
         });
 
         // close popups when clicking outdise popups
-        overlay.addEventListener('click', hidePopups);
+        overlay.addEventListener('click',   () => {
+            hidePopups();
+            mapLink.classList.add('active');
+        });
 
-
+        // Add click event to "Map" link to close all popups
+        mapLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            hidePopups();
+            mapLink.classList.add('active');
+        })
 
     </script>
 
