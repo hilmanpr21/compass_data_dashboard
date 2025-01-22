@@ -25,13 +25,13 @@ h2 {
 }
 
 h3 {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     margin: 0;
 }
 
 p {
-    font-size: 16px;
+    font-size: 14px;
     margin: 0;
 }
 
@@ -39,12 +39,11 @@ p {
     position: fixed;
     top: 0;
     height: 45px;
-    background-color: #ffffff;
+    background-color: #fafafa;
     z-index: 999;
     width: 100%;
     left: 0;
     align-items: center;
-
     display: flex;
     justify-content: space-between;
 }
@@ -61,7 +60,7 @@ p {
 
 .nav-content a {
     text-decoration: none;
-    color: #08306b;
+    color: #0a0a0a;
     padding: 14px 16px;
     font-size: 16px;
     font-weight: 400;
@@ -70,7 +69,8 @@ p {
 .nav-content a.active {
     text-decoration:underline;
     text-underline-offset: 5px;
-    font-weight: 600;
+    font-weight: 400;
+    color: #4d9221;
 }
 
 .nav-content a:hover {
@@ -98,17 +98,15 @@ p {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    background-color: #ffffff;
+    width: 65%;
+    height: 65%;
+    background-color: #fafafa;
     padding: 30px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     z-index: 99;
     text-align: left;
-    overflow: scroll;
+    overflow: hidden;
 }
-
-
 
 .popup-content h2{
     margin-top: 0;
@@ -123,6 +121,7 @@ p {
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
+    color: #262626;
 }
 
 .popup-columns{
@@ -135,6 +134,26 @@ p {
 
 .popup-column-content{
     margin-bottom: 20px;
+}
+
+.popup-footer{
+    display: flex; /**/
+    justify-content: space-between; /*ensures logo stay on the left and mentu stays on the right*/
+    align-items: center;
+    background-color: #d4d4d4;
+    position: fixed; /*make navbar stays on top when scrolling*/
+    bottom: 0;
+    height:65px;
+    right: 0px;
+    width: 100%;
+    z-index: 99; /*ensure above other element (like arrange or order)*/
+}
+
+.popup-footer .logo img{
+    height: 50px;
+    width: auto;
+    bottom: 5px;
+    margin-left: 30px;
 }
 
 /*position of the map on the page*/
@@ -151,7 +170,7 @@ p {
     top: 45px;
     bottom: 0;
     right: 0;
-    background: #ffffff;
+    background: #fafafa;
     margin-right: 0px;
     overflow: auto; /**for scrolling**/
     border-radius: 0px;
@@ -159,6 +178,7 @@ p {
 }
 
 .map-overlay-content {
+    margin-top: 5px;
     margin-left: 10px;
     padding-right: 15px;
 }
@@ -167,7 +187,7 @@ p {
     display: flex; /**/
     justify-content: space-between; /*ensures logo stay on the left and mentu stays on the right*/
     align-items: center;
-    background-color: #ffffff;
+    background-color: #d4d4d4;
     padding: 0 0px;
     position: fixed; /*make navbar stays on top when scrolling*/
     bottom: 0;
@@ -176,7 +196,6 @@ p {
     width: 20%;
     z-index: 40; /*ensure above other element (like arrange or order)*/
 }
-
 
 .logo{
     display: flex;
@@ -192,6 +211,61 @@ p {
     bottom: 5px;
 }
 
+.theme-change {
+    display: flex;
+    margin-right: 10px;
+}
+
+.theme-switch {
+    position: relative;
+    width: 50px;
+    height: 30px;
+}
+
+.theme-switch input {
+    /*to hide the default html checkbox*/
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #525252;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    /*to set the initial condition*/
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 5px;
+    bottom: 5px;
+    background-color: #d4d4d4;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #fafafa;
+    
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+    background-color: #d4d4d4;
+}
+
 .region-select {
     margin-top:30px;
     font-size: 16px;
@@ -200,17 +274,8 @@ p {
     border-width: 1px;
     font-family: inherit;
     border-radius: 4px;
-    background-color: #ffffff;
+    background-color: #fafafa;
     border-color: #dfdddd;
-}
-
-#slider {
-    margin-top: 30px;
-}
-
-#speed-limit-slider {
-    width: 100%;
-    cursor: grab;
 }
 
 .slider-number{
@@ -218,11 +283,41 @@ p {
     justify-content: space-between;
 }
 
+#slider {
+    margin-top: 30px;
+}
+
+#speed-limit-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    opacity: 0.8;
+    border-radius: 10px;
+    outline: none;
+    height: 15px;
+}
+
+#speed-limit-slider:hover{
+    opacity: 1;
+    cursor: pointer;
+}
+
 #speed-limit-slider::-webkit-slider-runnable-track{
-    background: linear-gradient(to right, #8e0152,#c51b7d,#de77ae,#f1b6da,#fde0ef,#e6f5d0,#b8e186,#7fbc41,#4d9221,#276419);
-    border-radius: 9px;
-    border-color: #dfdddd;
-    border-width: 15px;
+    background: linear-gradient(to right,#b2182b,#bc313f, #c54952, #cf6266, #d87a79, #e2938d, #ebaba0, #f4c3b4, #fddbc7, #4393c3, #053061);
+    border-radius: 10px;
+    border: none;
+    height: 15px;
+}
+
+#speed-limit-slider::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background:none;
+    border-radius: 50%;
+    border: 4px solid #0a0a0a;
+    cursor: pointer;
+    margin-top: -3px;
 }
 
 .info {

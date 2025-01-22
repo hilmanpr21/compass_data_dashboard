@@ -12,7 +12,8 @@
     <link href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1-dev/mapbox-gl-geocoder.css'  rel='stylesheet'/>    
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
-    <link href='style.css' rel='stylesheet' />
+    <link id="theme-stylesheet" href='style_dark.css' rel='stylesheet' />
+
 </head>
 
 
@@ -64,16 +65,10 @@
 
             <div id="slider">
                 <h2>Adherence rate  &le; <label id="speed-limit">100</label>%</h2>
-                <input type="range" id="speed-limit-slider" name="speed-slider" min="20" max="100" value="100" step="10" />
+                <input type="range" id="speed-limit-slider" name="speed-slider" min="20" max="100" value="100" step="5" />
                 <div class="slider-number">
                     <p>20</p>
-                    <p>30</p>
-                    <p>40</p>
-                    <p>50</p>
                     <p>60</p>
-                    <p>70</p>
-                    <p>80</p>
-                    <p>90</p>
                     <p>100</p>
                 </div>
             </div>
@@ -98,6 +93,8 @@
                     </div>
                 </div>
             </div> 
+
+            <div id="graph"></div>
         </div>
     </div>
 
@@ -124,6 +121,11 @@
                 <p>4. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
             </div>
         </div>
+        <div class="popup-footer">
+            <div class="logo">
+                <img class="popup-logo" src="../../04_image/CDRC_logo.png" alt="CDRC-logo">
+            </div>
+        </div>
     </div>
 
     <!--Pop up content for references-->
@@ -142,6 +144,11 @@
             </div>
             <div class="popup-column-content">
                 <p>4. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+        </div>
+        <div class="popup-footer">
+            <div class="logo">
+                <img class="popup-logo" src="../../04_image/CDRC_logo.png" alt="CDRC-logo">
             </div>
         </div>
     </div>
@@ -164,11 +171,22 @@
                 <p>4. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
             </div>
         </div>
+        <div class="popup-footer">
+            <div class="logo">
+                <img class="popup-logo" src="../../04_image/CDRC_logo.png" alt="CDRC-logo">
+            </div>
+        </div>
     </div>
 
     <div class="footer">
         <div class="logo">
             <img class="logo" src="../../04_image/CDRC_logo.png" alt="CDRC-logo">
+        </div>
+        <div id="theme-change" class="theme-change">
+            <label class="theme-switch">
+                <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+                <span class="toggle-slider"></span>
+            </label>
         </div>
     </div>
 
@@ -185,38 +203,44 @@
             style: 'mapbox://styles/hilmanpr21/cm1pfpqqa00re01qrhaqz05fw', // style URL
             center:  [-1.62, 53.8], // starting position [lng, lat]
             zoom: 11, // starting zoom
-            minzoom: 9
+            minZoom: 9
         });
+
+        //Change map layer based on Zoom level
+        // sett zoom change threshold 
+        const zoomThreshold = 11;
 
         // Variable to store the ID of the currently hovered feature
         let hoveredFeatureId = null;
-
-        map.on('load', () => {
+        
+        function addSourceAndLayer(){
             map.addSource('westyorkshire',{
                 type: 'vector',
                 url: 'mapbox://hilmanpr21.8d0rl1bk',
                 promoteId: 'TOID' // add this to promote TOID as unique identifier
             });
 
-
+            map.addSource('westyorkshire_lsoa_source',{
+                type: 'vector',
+                url: 'mapbox://hilmanpr21.westyorkshire-adherence-lsoa',
+                promoteId: 'LSOA21CD' // as unique identifier for each geometry
+            });
 
             map.addLayer({
                 id: 'westyorkshire_speed_limit',
                 type: 'line',
                 source: 'westyorkshire',
                 'source-layer': 'westyorkshire-9lff31',
+                'minzoom': zoomThreshold, // to set the layer only appear with minimal zoom level
                 paint: {
                     'line-color': ['interpolate', ['linear'],
                         ['get', 'link_adhrate'],
-                        20, '#c51b7d',
-                        30, '#de77ae',
-                        40, '#f1b6da',
-                        50, '#fde0ef',
-                        60, '#e6f5d0',
-                        70, '#b8e186',
-                        80, '#7fbc41',
-                        90, '#4d9221',
-                        100, '#276419'
+                            0, '#b2182b',
+                            80, '#fddbc7',
+                            85, '#92c5de',
+                            90, '#4393c3',
+                            95, '#2166ac',
+                            100, '#053061'
                     ], 
                     'line-opacity': 1, 
                     'line-width': [
@@ -225,15 +249,58 @@
                         6, //for linewidth when the data is hovered
                         2  //for linewidth on normal condition or hover is false
                     ]
-                }
-            });
+                },
+            },  
+            'road-label-simple' // Add layer below labels
+            );
+
+            map.addLayer({
+                id: 'westyorkshire-lsoa',
+                type: 'fill',
+                source: 'westyorkshire_lsoa_source',
+                'source-layer': 'westyorkshire_lsoa', // layer written in th tileset
+                filter: ['has', 'link_adhrate'], //to filter onmly include filter that has a valid `adh_rate
+                'maxzoom': zoomThreshold, // to set the layer only appear with maximal zoom threshold
+                paint: {
+                    'fill-color': [
+                        'case', 
+                        ['boolean', ['feature-state', 'hover'], false],
+                        '#043927',
+                        [
+                            'interpolate', 
+                            ['linear'],
+                            ['get', 'link_adhrate'],
+                            0, '#b2182b',
+                            80, '#fddbc7',
+                            85, '#92c5de',
+                            90, '#4393c3',
+                            95, '#2166ac',
+                            100, '#053061'],
+                        ],
+                    'fill-opacity': [
+                        'case', 
+                        ['boolean', ['feature-state', 'hover'], false],
+                        1,
+                        0.75
+                    ]
+                    ,
+                },
+            },  
+            'road-label-simple' // Add layer below labels
+            );
+        }
+
+        map.on('style.load', () => {
+            addSourceAndLayer();
+            
         });
+
 
         // Set Cursor style on the map
         map.getCanvas().style.cursor = 'default';
 
         // HOVER
-        // Add hover effect
+        // Add hover effect on road Network
         map.on('mousemove', 'westyorkshire_speed_limit', (e) => {
             //get the feature ID
             const featureId = e.features[0].properties.TOID;
@@ -265,66 +332,91 @@
             hoveredFeatureId = null;
         });
 
-        // change info in hovering
-        map.on('mousemove', (event) => {
+        // Add hover effect on LSOA
+        map.on('mousemove', 'westyorkshire-lsoa', (e) => {
+            // get feature ID
+            const featureId = e.features[0].properties.LSOA21CD;
 
-            map.getCanvas().style.cursor = 'pointer';
-            
-            // save the data into a 
-            const speedData = map.queryRenderedFeatures(event.point,
-                {
-                    layers: ['westyorkshire_speed_limit']                
-                }
+            if  (hoveredFeatureId !== null && hoveredFeatureId !== featureId){
+                map.setFeatureState(
+                    { source: 'westyorkshire_lsoa_source', sourceLayer: 'westyorkshire_lsoa', id: hoveredFeatureId},
+                    {hover: false}
+                );
+            }
+
+            hoveredFeatureId = featureId;
+
+            map.setFeatureState(
+                { source: 'westyorkshire_lsoa_source', sourceLayer: 'westyorkshire_lsoa', id: hoveredFeatureId},
+                {hover: true}
             );
-            document.getElementById('info-data').innerHTML=
-            speedData.length
-            ?`<div class="info-row">
-                        <h3>Link ADH Rate: </h3><p>${speedData[0].properties.link_adhrate}</p>
+        });
+
+        // Remove hover effect when leaving the layer
+        map.on('mouseleave', 'westyorkshire-lsoa', () => {
+            if (hoveredFeatureId !== null) {
+                map.setFeatureState(
+                    { source: 'westyorkshire_lsoa_source', sourceLayer: 'westyorkshire_lsoa', id: hoveredFeatureId },
+                    { hover: false }
+                );
+            }
+            hoveredFeatureId = null;
+        });
+
+        // change info widget in hovering
+
+        const hoverLayers = ['westyorkshire_speed_limit', 'westyorkshire-lsoa'];
+
+        map.on('mousemove', (event) => {
+            
+            let hoverData = null;
+
+            for (const layer of hoverLayers) {
+                const data = map.queryRenderedFeatures(event.point, {layers: [layer] });
+                if (data.length > 0) {
+                    hoverData = data[0];
+                    break; // exit the loop when data is found
+                }
+            }
+
+            if (hoverData) {
+                map.getCanvas().style.cursor = 'pointer';
+                document.getElementById('info-data').innerHTML=
+                `
+                    <div class="info-row">
+                        <h3>Link ADH Rate: </h3><p>${hoverData.properties.link_adhrate}</p>
                     </div>
                     <div class="info-row">
-                        <h3>Average speed: </h3><p>${speedData[0].properties.avg_speed}</p>
+                        <h3>Average speed: </h3><p>${hoverData.properties.avg_speed}</p>
                     </div>
                     <div class="info-row">
-                        <h3>Point Count: </h3><p>${speedData[0].properties.ptcount}</p>
+                        <h3>Point Count: </h3><p>${hoverData.properties.ptcount}</p>
                     </div>
                     <div class="info-row">
-                        <h3>Average Width: </h3><p>${speedData[0].properties.averagewidth}</p>
+                        <h3>Average Width: </h3><p>${hoverData.properties.averagewidth}</p>
                     </div>
                     <div class="info-row">
-                        <h3>Link Speeding Account: </h3><p>${speedData[0].properties.link_speedingcount}</p>
-            </div>
-            ` //Set the content on how the div want to be overwrite when hover
-            : 
-            //when normal or not hovered
-            `<div class="info-row">
-                        <h3>Link ADH Rate: </h3><p></p>
+                        <h3>Link Speeding Account: </h3><p>${hoverData.properties.link_speedingcount}</p>
                     </div>
-                    <div class="info-row">
-                        <h3>Average speed: </h3><p></p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Point Count: </h3><p></p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Average Width: </h3><p></p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Link Speeding Account: </h3><p></p>
-                    </div>`;
+                `;
+            } else {
+                map.getCanvas().style.cursor = 'default';
+            }
         });
 
         // Adherence Slider
-        // Add event listener for adherence slider
+        // Filter Westyorkshire road Network
         document.getElementById('speed-limit-slider').addEventListener('input', (event) => {
-            const speed = parseInt(event.target.value);
+            const adhrate = parseInt(event.target.value);
             // To filter the map value '<=' meaning less or equals
             // 'westyorkshire_speed_limit' is the map layer
             // 'link_adhrate'is the column in the tileset that represent ADH (adharance) rate
-            map.setFilter('westyorkshire_speed_limit', ['<=', ['get', 'link_adhrate'], speed]);
+            map.setFilter('westyorkshire_speed_limit', ['<=', ['get', 'link_adhrate'], adhrate]);
+            map.setFilter('westyorkshire-lsoa', ['<=', ['get', 'link_adhrate'], adhrate]);
         
             // to print the value we are have in the slider
-            // meaning change the label that has 'speed-limit' ID with value stored under 'speed' const
-            document.getElementById('speed-limit').innerText = speed;
+            // meaning change the label that has 'speed-limit' ID with value stored under 'westyorkshire_lsoa' const
+            document.getElementById('speed-limit').innerText = adhrate;
         });
 
         // SEARCHBOX GEOCODING
@@ -441,10 +533,29 @@
             e.preventDefault();
             hidePopups();
             mapLink.classList.add('active');
-        })
+        });
+
+        //CHANGE MAPBOX STYLE AND CSS STYLE
+        //change theme by click
+        function toggleTheme(){
+            const toggle = document.getElementById("theme-toggle");
+            const linkcss = document.getElementById("theme-stylesheet"); // id of Link in <head>
+            
+            if (toggle.checked) {
+                //apply light theme
+                linkcss.href = "style_light.css";
+                map.setStyle('mapbox://styles/hilmanpr21/cm48p52qs00k301sa79a849kf');
+            } else {
+                //apply dark theme
+                linkcss.href = "style_dark.css";
+                map.setStyle('mapbox://styles/hilmanpr21/cm1pfpqqa00re01qrhaqz05fw')
+            }
+        }
+
+        // BUILDING THE GRAPH
+
 
     </script>
 
 </body>
-
 </html>

@@ -1,0 +1,338 @@
+<style>
+
+body{
+    margin: 0;
+    padding: 0;
+}
+
+/*to remove default browser styles*/
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 400;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #e5e5e5;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 450;
+    color: #a3a3a3;
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    color: #e5e5e5;
+}
+
+p {
+    font-size: 14px;
+    margin: 0;
+    color: #e5e5e5;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    height: 45px;
+    background-color: #171717;
+    z-index: 999;
+    width: 100%;
+    left: 0;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+.nav-content {
+    margin: 0 15px 0 15px;
+}
+
+.nav-content h1{
+    margin: 0; /*to cancel the automatic margin from h1*/
+}
+
+.nav-content a {
+    text-decoration: none;
+    color: #d4d4d4;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.nav-content a.active {
+    text-decoration:underline;
+    text-underline-offset: 5px;
+    font-weight: 400;
+    color: #00df81;
+}
+
+.nav-content a:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    font-weight: 400;
+}
+
+/*Mute effect*/
+.muted-overlay{
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.8;
+    z-index: 50;
+    cursor: pointer;
+}
+
+/*Styling popup content*/
+.popup-content {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 65%;
+    height: 65%;
+    background-color: #262626;
+    padding: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    z-index: 99;
+    text-align: left;
+    overflow: hidden;
+}
+
+.popup-content h2{
+    margin-top: 0;
+}
+
+.popup-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #a3a3a3;
+}
+
+.popup-columns{
+    column-count: 2; /*set the number of column*/
+    column-gap: 50px;
+    text-align: left;
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+.popup-column-content{
+    margin-bottom: 20px;
+}
+
+.popup-footer{
+    display: flex; /**/
+    justify-content: space-between; /*ensures logo stay on the left and mentu stays on the right*/
+    align-items: center;
+    background-color: #d4d4d4;
+    position: fixed; /*make navbar stays on top when scrolling*/
+    bottom: 0;
+    height:65px;
+    right: 0px;
+    width: 100%;
+    z-index: 99; /*ensure above other element (like arrange or order)*/
+}
+
+.popup-footer .logo img{
+    height: 50px;
+    width: auto;
+    bottom: 5px;
+    margin-left: 30px;
+}
+
+/*position of the map on the page*/
+#map {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    bottom: 0px;
+    width: 80%;
+}
+
+.map-overlay {
+    position: absolute;
+    top: 45px;
+    bottom: 0;
+    right: 0;
+    background: #171717;
+    margin-right: 0px;
+    overflow: auto; /**for scrolling**/
+    border-radius: 0px;
+    width: 20%;
+}
+
+.map-overlay-content {
+    margin-top: 5px;
+    margin-left: 10px;
+    padding-right: 15px;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between; /*ensures logo stay on the left and mentu stays on the right*/
+    align-items: center;
+    background-color: #d4d4d4;
+    padding: 0 0px;
+    position: fixed; /*make footer stay at the bottom even when it scrolled*/
+    bottom: 0;
+    height:100px;
+    right: 0px;
+    width: 20%;
+    z-index: 40; /*ensure above other element (like arrange or order)*/
+}
+
+.logo{
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    bottom: 5px;
+}
+
+.footer .logo img {
+    height: 70px;
+    width: auto;
+    bottom: 5px;
+}
+
+.theme-change {
+    display: flex;
+    margin-right: 10px;
+}
+
+.theme-switch {
+    position: relative;
+    width: 50px;
+    height: 30px;
+}
+
+.theme-switch input {
+    /*to hide the default html checkbox*/
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #525252;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    /*to set the initial condition*/
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 5px;
+    bottom: 5px;
+    background-color: #d4d4d4;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #fafafa;
+    
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+    background-color: #d4d4d4;
+}
+
+.region-select {
+    margin-top:30px;
+    font-size: 16px;
+    height: 40px;
+    width: 100%;
+    border-width: 1px;
+    font-family: inherit;
+    border-radius: 4px;
+    background-color: #ffffff;
+    border-color: #dfdddd;
+}
+
+.slider-number{
+    display: flex;
+    justify-content: space-between;
+}
+
+#slider {
+    margin-top: 30px;
+}
+
+#speed-limit-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    opacity: 0.8;
+    border-radius: 10px;
+    outline: none;
+    height: 15px;
+}
+
+#speed-limit-slider:hover{
+    opacity: 1;
+    cursor: pointer;
+}
+
+#speed-limit-slider::-webkit-slider-runnable-track{
+    background: linear-gradient(to right, #b2182b,#bc313f, #c54952, #cf6266, #d87a79, #e2938d, #ebaba0, #f4c3b4, #fddbc7, #4393c3, #053061);
+    border-radius: 10px;
+    border: none;
+    height: 15px;
+}
+
+#speed-limit-slider::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background:none;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    cursor: pointer;
+    margin-top: -3px;
+}
+
+.info {
+    margin-top: 30px; /*giving space with previous section*/
+}
+
+.info-row{
+    display: flex; /*to make the continer into a flex container*/
+    justify-content: space-between; /*to distribute the container content equally so h3 will align in left while p aling in right*/
+    align-items: center;  /*align vertically in the cneter*/
+    margin-bottom: 15px; /*giving space between line*/
+}
+
+
+
+
