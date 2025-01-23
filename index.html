@@ -9,7 +9,9 @@
     
     <!--Adding Geocoder script-->
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1-dev/mapbox-gl-geocoder.min.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1-dev/mapbox-gl-geocoder.css'  rel='stylesheet'/>    
+    <link href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1-dev/mapbox-gl-geocoder.css'  rel='stylesheet'/> 
+    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
     <link id="theme-stylesheet" href='style_dark.css' rel='stylesheet' />
@@ -87,9 +89,6 @@
                     </div>
                     <div class="info-row">
                         <h3>Average Width: </h3><p></p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Link Speeding Account: </h3><p></p>
                     </div>
                 </div>
             </div> 
@@ -293,6 +292,8 @@
         map.on('style.load', () => {
             addSourceAndLayer();
             
+            // Update the graph initially
+            updateGraphOnViewport();
         });
 
 
@@ -384,19 +385,16 @@
                 document.getElementById('info-data').innerHTML=
                 `
                     <div class="info-row">
-                        <h3>Link ADH Rate: </h3><p>${hoverData.properties.link_adhrate}</p>
+                        <h3>Link ADH Rate: </h3><p>${parseFloat(hoverData.properties.link_adhrate).toFixed(2)}</p>   //originally it is `${hoverData.properties.link_adhrate}` but `parseFloat.toFixed(2)` is to round the value to 2 decimal
                     </div>
                     <div class="info-row">
-                        <h3>Average speed: </h3><p>${hoverData.properties.avg_speed}</p>
+                        <h3>Average speed: </h3><p>${parseFloat(hoverData.properties.avg_speed).toFixed(2)}</p>
                     </div>
                     <div class="info-row">
-                        <h3>Point Count: </h3><p>${hoverData.properties.ptcount}</p>
+                        <h3>Point Count: </h3><p>${parseFloat(hoverData.properties.ptcount).toFixed(2)}</p>
                     </div>
                     <div class="info-row">
-                        <h3>Average Width: </h3><p>${hoverData.properties.averagewidth}</p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Link Speeding Account: </h3><p>${hoverData.properties.link_speedingcount}</p>
+                        <h3>Average Width: </h3><p>${parseFloat(hoverData.properties.averagewidth).toFixed(2)}</p>
                     </div>
                 `;
             } else {
@@ -553,7 +551,90 @@
         }
 
         // BUILDING THE GRAPH
+        // Function to process features and aggregate data
+        function updateGraph(features){
+            const data = {};
+            features.forEach(feature => {
+                const value = Math.floor(feature.properties.link_adhrate / 10) * 10;
+                if (value) {
+                    data[value] = (data[value] || 0) + 1;
+                }
+            });
 
+            // transform data for D3
+            const graphData = Object.entries(data).map(([key, count]) => ({
+                key: key,
+                count: count
+            }));
+
+            // Render the graph
+            renderGraph(graphData);
+        }
+
+        // Function to render the bar graph using D3
+        function renderGraph(data) {
+            const width = 320;
+            const height = 175;
+            const margin = { top: 15, right: 5, bottom: 40, left: 45 };
+
+            // Clear previous graph
+            d3. select('#graph').selectAll('*').remove();
+
+            const svg =d3.select('#graph')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.key))
+                .range([margin.left, width - margin.right])
+                .padding(0.1);
+            
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.count)]).nice()
+                .range([height - margin.bottom, margin.top]);
+            
+            // bar chart styling
+            svg.append('g')
+                .selectAll('rect')
+                .data(data)
+                .join('rect')
+                .attr('x', d => x(d.key))
+                .attr('y', d => y(d.count))
+                .attr('height', d => y(0) - y(d.count))
+                .attr('width', x.bandwidth())
+                .attr('fill', 'steelblue');
+
+            // x-axis
+            svg.append('g')
+                .attr('transform', `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text") // to choose only text
+                // .attr("transform", "rotate(-45)") // to rotate the text
+                .style("text-anchor", "end")
+                .style("fill", "white")
+                .style("font-size", "12px");
+
+            
+            svg.append('g')
+                .attr('transform', `translate(${margin.left},0)`)
+                .call(d3.axisLeft(y).ticks(5)) // `ticks(5)` to limit y-axis to 5 ticks
+                .selectAll("text")
+                .style("fill", "white")
+                .style("font-size", "12px");
+
+            svg.selectAll(".domain, .tick line")
+                .attr("stroke", "white")
+        }
+
+        // Function to query visible features and update the graph
+        function updateGraphOnViewport() {
+            const features = map.queryRenderedFeatures({ layers: ['westyorkshire_speed_limit']}) //layer is the layer of map tiles
+            updateGraph(features);
+        }
+
+        // Update graph on map movement
+        map.on('moveend', updateGraphOnViewport);
 
     </script>
 
