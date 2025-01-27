@@ -365,7 +365,6 @@
         });
 
         // change info widget in hovering
-
         const hoverLayers = ['westyorkshire_speed_limit', 'westyorkshire-lsoa'];
 
         map.on('mousemove', (event) => {
@@ -385,7 +384,7 @@
                 document.getElementById('info-data').innerHTML=
                 `
                     <div class="info-row">
-                        <h3>Link ADH Rate: </h3><p>${parseFloat(hoverData.properties.link_adhrate).toFixed(2)}</p>   //originally it is `${hoverData.properties.link_adhrate}` but `parseFloat.toFixed(2)` is to round the value to 2 decimal
+                        <h3>Link ADH Rate: </h3><p>${parseFloat(hoverData.properties.link_adhrate).toFixed(2)}</p>   
                     </div>
                     <div class="info-row">
                         <h3>Average speed: </h3><p>${parseFloat(hoverData.properties.avg_speed).toFixed(2)}</p>
