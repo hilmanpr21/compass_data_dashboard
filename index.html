@@ -292,8 +292,12 @@
         map.on('style.load', () => {
             addSourceAndLayer();
             
-            // Update the graph initially
-            updateGraphOnViewport();
+            // Update the graph initially but the graph will be rendered until all layers and sources 
+            // `idle` event is triggered when the map has finished loading the all of its resources and there are no ongoing transition or animation
+            // it will automatically updated when the adherence slider is changed
+            map.on('idle', () => {
+                updateGraphOnViewport();
+            });            
         });
 
 
@@ -552,19 +556,12 @@
         // BUILDING THE GRAPH
         // Function to process features and aggregate data
         function updateGraph(features){
-            const data = {};
-            features.forEach(feature => {
-                const value = Math.floor(feature.properties.link_adhrate / 10) * 10;
-                if (value) {
-                    data[value] = (data[value] || 0) + 1;
-                }
-            });
+            const graphData = features
+                .map(feature => feature.properties.link_adhrate)
+                .filter(value => !isNaN(value));
+            
 
-            // transform data for D3
-            const graphData = Object.entries(data).map(([key, count]) => ({
-                key: key,
-                count: count
-            }));
+            console.log("graphData:", graphData)
 
             // Render the graph
             renderGraph(graphData);
@@ -579,29 +576,38 @@
             // Clear previous graph
             d3. select('#graph').selectAll('*').remove();
 
+            // render the graph
             const svg =d3.select('#graph')
                 .append('svg')
                 .attr('width', width)
                 .attr('height', height);
             
-            const x = d3.scaleBand()
-                .domain(data.map(d => d.key))
+            // define the bin
+            const histogram = d3.histogram()
+                .domain([0, d3.max(data)])    //set full range of data in X-axis that will be devided into bin
+                .thresholds(10);     // to set how many bins do we want in our chart
+
+            const bins = histogram(data);
+
+            console.log("bins:", bins)
+
+            const x = d3.scaleLinear()
+                .domain([0, d3.max(data)])    //set full range of the X axis
                 .range([margin.left, width - margin.right])
-                .padding(0.1);
             
             const y = d3.scaleLinear()
-                .domain([0, d3.max(data, d => d.count)]).nice()
+                .domain([0, d3.max(bins, d => d.length)])
                 .range([height - margin.bottom, margin.top]);
             
             // bar chart styling
             svg.append('g')
                 .selectAll('rect')
-                .data(data)
+                .data(bins)
                 .join('rect')
-                .attr('x', d => x(d.key))
-                .attr('y', d => y(d.count))
-                .attr('height', d => y(0) - y(d.count))
-                .attr('width', x.bandwidth())
+                .attr('x', d => x(d.x0))
+                .attr('y', d => y(d.length))
+                .attr('height', d => y(0) - y(d.length))
+                .attr('width', d => x(d.x1) - x(d.x0) - 1) // -1 for padding between bins
                 .attr('fill', 'steelblue');
 
             // x-axis
