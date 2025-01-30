@@ -291,15 +291,9 @@
 
         map.on('style.load', () => {
             addSourceAndLayer();
-            
-            // Update the graph initially but the graph will be rendered until all layers and sources 
-            // `idle` event is triggered when the map has finished loading the all of its resources and there are no ongoing transition or animation
-            // it will automatically updated when the adherence slider is changed
-            map.on('idle', () => {
-                updateGraphOnViewport();
-            });            
+                    
         });
-
+ 
 
         // Set Cursor style on the map
         map.getCanvas().style.cursor = 'default';
@@ -395,9 +389,6 @@
                     </div>
                     <div class="info-row">
                         <h3>Point Count: </h3><p>${parseFloat(hoverData.properties.ptcount).toFixed(2)}</p>
-                    </div>
-                    <div class="info-row">
-                        <h3>Average Width: </h3><p>${parseFloat(hoverData.properties.averagewidth).toFixed(2)}</p>
                     </div>
                 `;
             } else {
@@ -554,10 +545,16 @@
         }
 
         // BUILDING THE GRAPH
+        // Function to query visible features and update the graph
+        function updateGraphOnViewport() {
+            const features = map.queryRenderedFeatures({ layers: ['westyorkshire_speed_limit', 'westyorkshire-lsoa']}) //`layers` is the layer of map tiles
+            updateGraph(features);
+        }
+
         // Function to process features and aggregate data
         function updateGraph(features){
             const graphData = features
-                .map(feature => feature.properties.link_adhrate)
+                .map(item => item.properties.link_adhrate)
                 .filter(value => !isNaN(value));
             
 
@@ -576,7 +573,7 @@
             // Clear previous graph
             d3. select('#graph').selectAll('*').remove();
 
-            // render the graph
+            // create SVG canvas
             const svg =d3.select('#graph')
                 .append('svg')
                 .attr('width', width)
@@ -584,15 +581,13 @@
             
             // define the bin
             const histogram = d3.histogram()
-                .domain([0, d3.max(data)])    //set full range of data in X-axis that will be devided into bin
-                .thresholds(10);     // to set how many bins do we want in our chart
+                .domain([d3.min(data), d3.max(data)])    //set full range of data in X-axis that will be devided into bin
+                .thresholds(25);     // to set how many bins do we want in our chart
 
             const bins = histogram(data);
 
-            console.log("bins:", bins)
-
             const x = d3.scaleLinear()
-                .domain([0, d3.max(data)])    //set full range of the X axis
+                .domain([d3.min(data), d3.max(data)])    //set full range of the X axis
                 .range([margin.left, width - margin.right])
             
             const y = d3.scaleLinear()
@@ -632,14 +627,12 @@
                 .attr("stroke", "white")
         }
 
-        // Function to query visible features and update the graph
-        function updateGraphOnViewport() {
-            const features = map.queryRenderedFeatures({ layers: ['westyorkshire_speed_limit']}) //layer is the layer of map tiles
-            updateGraph(features);
-        }
-
-        // Update graph on map movement
-        map.on('moveend', updateGraphOnViewport);
+        // Update the graph initially but the graph will be rendered until all layers and sources 
+        // `idle` event is triggered when the map has finished loading the all of its resources and there are no ongoing transition or animation
+        // it will automatically updated when the adherence slider is changed
+        map.on('idle', () => {
+            updateGraphOnViewport();
+        });  
 
     </script>
 
