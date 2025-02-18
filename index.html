@@ -122,7 +122,7 @@
         </div>
         <div class="popup-footer">
             <div class="logo">
-                <img class="popup-logo" src="../../04_image/CDRC_logo.png" alt="CDRC-logo">
+                <img class="popup-logo" src="source/CDRC_logo.png" alt="CDRC-logo">
             </div>
         </div>
     </div>
@@ -147,7 +147,7 @@
         </div>
         <div class="popup-footer">
             <div class="logo">
-                <img class="popup-logo" src="../../04_image/CDRC_logo.png" alt="CDRC-logo">
+                <img class="popup-logo" src="source/CDRC_logo.png" alt="CDRC-logo">
             </div>
         </div>
     </div>
@@ -172,14 +172,14 @@
         </div>
         <div class="popup-footer">
             <div class="logo">
-                <img class="popup-logo" src="../../04_image/CDRC_logo.png" alt="CDRC-logo">
+                <img class="popup-logo" src="source/CDRC_logo.png" alt="CDRC-logo">
             </div>
         </div>
     </div>
 
     <div class="footer">
         <div class="logo">
-            <img class="logo" src="../../04_image/CDRC_logo.png" alt="CDRC-logo">
+            <img class="logo" src="source/CDRC_logo.png" alt="CDRC-logo">
         </div>
         <div id="theme-change" class="theme-change">
             <label class="theme-switch">
@@ -221,7 +221,7 @@
 
             map.addSource('westyorkshire_lsoa_source',{
                 type: 'vector',
-                url: 'mapbox://hilmanpr21.westyorkshire-adherence-lsoa',
+                tiles: ['https://vectortilesstorage.blob.core.windows.net/trial-layer/tilestrial/{z}/{x}/{y}.pbf?sp=r&st=2025-02-18T17:34:30Z&se=2325-02-19T01:34:30Z&spr=https&sv=2022-11-02&sr=c&sig=TCPaBehb1qxd85QxEkP65r2jQ1N3g3mxEWMi1Bp%2FLlA%3D'],
                 promoteId: 'LSOA21CD' // as unique identifier for each geometry
             });
 
@@ -257,7 +257,7 @@
                 id: 'westyorkshire-lsoa',
                 type: 'fill',
                 source: 'westyorkshire_lsoa_source',
-                'source-layer': 'westyorkshire_lsoa', // layer written in th tileset
+                'source-layer': 'trial_layer', // layer written in th tileset
                 filter: ['has', 'link_adhrate'], //to filter onmly include filter that has a valid `adh_rate
                 'maxzoom': zoomThreshold, // to set the layer only appear with maximal zoom threshold
                 paint: {
@@ -568,7 +568,7 @@
         function renderGraph(data) {
             const width = 320;
             const height = 175;
-            const margin = { top: 15, right: 5, bottom: 40, left: 45 };
+            const margin = { top: 15, right: 5, bottom: 40, left: 50 };
 
             // Clear previous graph
             d3. select('#graph').selectAll('*').remove();
@@ -582,7 +582,7 @@
             // define the bin
             const histogram = d3.histogram()
                 .domain([d3.min(data), d3.max(data)])    //set full range of data in X-axis that will be devided into bin
-                .thresholds(25);     // to set how many bins do we want in our chart
+                .thresholds(20);     // to set how many bins do we want in our chart
 
             const bins = histogram(data);
 
