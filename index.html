@@ -24,7 +24,7 @@
     
     <div id="navbar" class="navbar">
         <div class="nav-content">
-            <h1>SPEEDING BEHAVIOUR</h1>
+            <h1>Vehicular Speeding in British Cities</h1>
         </div>
         <div class="nav-content">
             <a class="active" data-target="maps" href="#map">Map</a>
@@ -39,17 +39,21 @@
     <div class="map-overlay" id="widget">
         <div class="map-overlay-content">
             <h1>
-                SPEEDING BEHAVIOUR
+                Adherence Rate
             </h1>
             <h2>
                 England, United Kingdom
             </h2>
 
+            <br>
+            <p>
+                Dropdown to select Regions...
+            </p>
             <div id="region-dropdown" class="region-dropdown">
                 <select id="region" class="region-select">
                     <option value="" disabled selected>Select Regions...</option>
                     <option value="-0.12,51.5">London</option>
-                    <option value="-1.62,53.8">West Yorkshire</option>
+                    <option value="-1.62,53.8" selected>West Yorkshire</option>
                     <option value="0.13,52.19">Cambridge</option>
                     <option value="-3.16,51.48">Cardiff</option>
                     <option value="-3.18,55.95">Edinburgh</option>
@@ -66,7 +70,9 @@
             </div>
 
             <div id="slider">
+                
                 <h2>Adherence rate  &le; <label id="speed-limit">100</label>%</h2>
+                <p>Drag slider to change adherence rate</p>
                 <input type="range" id="speed-limit-slider" name="speed-slider" min="20" max="100" value="100" step="5" />
                 <div class="slider-number">
                     <p>20</p>
@@ -77,6 +83,9 @@
             
     
             <div id="info" class="info">
+                <p>
+                    Hover map to check the detailed information
+                </p>
                 <div id="info-data">
                     <div class="info-row">
                         <h3>Link ADH Rate: </h3><p></p>
@@ -87,13 +96,16 @@
                     <div class="info-row">
                         <h3>Point Count: </h3><p></p>
                     </div>
-                    <div class="info-row">
-                        <h3>Average Width: </h3><p></p>
-                    </div>
                 </div>
             </div> 
 
-            <div id="graph"></div>
+            <div id="graph-container">
+                <p>
+                    This graph show Adharence Rate distribution of areas shown on the map
+                </p>
+                <div id="graph"></div>
+            </div>
+            
         </div>
     </div>
 
@@ -182,6 +194,7 @@
             <img class="logo" src="source/CDRC_logo.png" alt="CDRC-logo">
         </div>
         <div id="theme-change" class="theme-change">
+            <p>Toggel to change the web theme</p>
             <label class="theme-switch">
                 <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
                 <span class="toggle-slider"></span>
@@ -221,12 +234,12 @@
 
             map.addSource('westyorkshire_lsoa_source',{
                 type: 'vector',
-                tiles: ['https://vectortilesstorage.blob.core.windows.net/trial-layer/tilestrial/{z}/{x}/{y}.pbf?sp=r&st=2025-02-18T17:34:30Z&se=2325-02-19T01:34:30Z&spr=https&sv=2022-11-02&sr=c&sig=TCPaBehb1qxd85QxEkP65r2jQ1N3g3mxEWMi1Bp%2FLlA%3D'],
+                tiles: ['https://vectortilesstorage.blob.core.windows.net/trial-layer/westyorkshire_lsoa/{z}/{x}/{y}.pbf?sp=r&st=2025-02-18T17:34:30Z&se=2325-02-19T01:34:30Z&spr=https&sv=2022-11-02&sr=c&sig=TCPaBehb1qxd85QxEkP65r2jQ1N3g3mxEWMi1Bp%2FLlA%3D'],
                 promoteId: 'LSOA21CD' // as unique identifier for each geometry
             });
 
             map.addLayer({
-                id: 'westyorkshire_speed_limit',
+                id: 'westyorkshire_road',
                 type: 'line',
                 source: 'westyorkshire',
                 'source-layer': 'westyorkshire-9lff31',
@@ -257,7 +270,7 @@
                 id: 'westyorkshire-lsoa',
                 type: 'fill',
                 source: 'westyorkshire_lsoa_source',
-                'source-layer': 'trial_layer', // layer written in th tileset
+                'source-layer': 'westyorkshire_lsoa', // layer written in th tileset
                 filter: ['has', 'link_adhrate'], //to filter onmly include filter that has a valid `adh_rate
                 'maxzoom': zoomThreshold, // to set the layer only appear with maximal zoom threshold
                 paint: {
@@ -300,7 +313,7 @@
 
         // HOVER
         // Add hover effect on road Network
-        map.on('mousemove', 'westyorkshire_speed_limit', (e) => {
+        map.on('mousemove', 'westyorkshire_road', (e) => {
             //get the feature ID
             const featureId = e.features[0].properties.TOID;
 
@@ -321,7 +334,7 @@
         });
 
         // Remove hover effect when leaving the layer
-        map.on('mouseleave', 'westyorkshire_speed_limit', () => {
+        map.on('mouseleave', 'westyorkshire_road', () => {
             if (hoveredFeatureId !== null) {
                 map.setFeatureState(
                     { source: 'westyorkshire', sourceLayer: 'westyorkshire-9lff31', id: hoveredFeatureId },
@@ -362,8 +375,9 @@
             hoveredFeatureId = null;
         });
 
+        // CHANGE INFO WIDGET   
         // change info widget in hovering
-        const hoverLayers = ['westyorkshire_speed_limit', 'westyorkshire-lsoa'];
+        const hoverLayers = ['westyorkshire_road', 'westyorkshire-lsoa'];
 
         map.on('mousemove', (event) => {
             
@@ -401,9 +415,9 @@
         document.getElementById('speed-limit-slider').addEventListener('input', (event) => {
             const adhrate = parseInt(event.target.value);
             // To filter the map value '<=' meaning less or equals
-            // 'westyorkshire_speed_limit' is the map layer
+            // 'westyorkshire_road' is the map layer
             // 'link_adhrate'is the column in the tileset that represent ADH (adharance) rate
-            map.setFilter('westyorkshire_speed_limit', ['<=', ['get', 'link_adhrate'], adhrate]);
+            map.setFilter('westyorkshire_road', ['<=', ['get', 'link_adhrate'], adhrate]);
             map.setFilter('westyorkshire-lsoa', ['<=', ['get', 'link_adhrate'], adhrate]);
         
             // to print the value we are have in the slider
@@ -547,7 +561,7 @@
         // BUILDING THE GRAPH
         // Function to query visible features and update the graph
         function updateGraphOnViewport() {
-            const features = map.queryRenderedFeatures({ layers: ['westyorkshire_speed_limit', 'westyorkshire-lsoa']}) //`layers` is the layer of map tiles
+            const features = map.queryRenderedFeatures({ layers: ['westyorkshire_road', 'westyorkshire-lsoa']}) //`layers` is the layer of map tiles
             updateGraph(features);
         }
 
@@ -603,7 +617,7 @@
                 .attr('y', d => y(d.length))
                 .attr('height', d => y(0) - y(d.length))
                 .attr('width', d => x(d.x1) - x(d.x0) - 1) // -1 for padding between bins
-                .attr('fill', 'steelblue');
+                .attr('class', 'graph-bar'); //apply a class called 'graph-bar' that will be read in css file
 
             // x-axis
             svg.append('g')
@@ -612,7 +626,7 @@
                 .selectAll("text") // to choose only text
                 // .attr("transform", "rotate(-45)") // to rotate the text
                 .style("text-anchor", "end")
-                .style("fill", "white")
+                .attr('fill', 'var(--graph-stroke-color)') // assign the graph colour with assigned colour in CSS
                 .style("font-size", "12px");
 
             
@@ -620,11 +634,11 @@
                 .attr('transform', `translate(${margin.left},0)`)
                 .call(d3.axisLeft(y).ticks(5)) // `ticks(5)` to limit y-axis to 5 ticks
                 .selectAll("text")
-                .style("fill", "white")
+                .attr('class', 'graph-text')
                 .style("font-size", "12px");
 
             svg.selectAll(".domain, .tick line")
-                .attr("stroke", "white")
+                .style("stroke", "var(--graph-stroke-color)")
         }
 
         // Update the graph initially but the graph will be rendered until all layers and sources 

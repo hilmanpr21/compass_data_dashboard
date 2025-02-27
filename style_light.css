@@ -331,6 +331,19 @@ input:checked + .toggle-slider:before {
     margin-bottom: 15px; /*giving space between line*/
 }
 
+:root {
+    --graph-bar-color: steelblue;
+    --graph-text-color: #0a0a0a;
+    --graph-stroke-color: #0a0a0a;
+}
+
+.graph-bar {
+    fill: var(--graph-bar-color)
+}
+
+.graph-text {
+    fill: var(--graph-text-color)
+}
 
 
 
