@@ -228,7 +228,7 @@
         function addSourceAndLayer(){
             map.addSource('westyorkshire',{
                 type: 'vector',
-                url: 'mapbox://hilmanpr21.8d0rl1bk',
+                tiles: ['https://vectortilesstorage.blob.core.windows.net/trial-layer/Cambridge_road/{z}/{x}/{y}.pbf?sp=r&st=2025-02-18T17:34:30Z&se=2325-02-19T01:34:30Z&spr=https&sv=2022-11-02&sr=c&sig=TCPaBehb1qxd85QxEkP65r2jQ1N3g3mxEWMi1Bp%2FLlA%3D'],
                 promoteId: 'TOID' // add this to promote TOID as unique identifier
             });
 
@@ -242,7 +242,7 @@
                 id: 'westyorkshire_road',
                 type: 'line',
                 source: 'westyorkshire',
-                'source-layer': 'westyorkshire-9lff31',
+                'source-layer': 'Cambridge-road',
                 'minzoom': zoomThreshold, // to set the layer only appear with minimal zoom level
                 paint: {
                     'line-color': ['interpolate', ['linear'],
