@@ -228,14 +228,13 @@
         function addSourceAndLayer(){
             map.addSource('westyorkshire',{
                 type: 'vector',
-                tiles: ['https://vectortilesstorage.blob.core.windows.net/trial-layer/Cambridge_road/{z}/{x}/{y}.pbf?sp=r&st=2025-02-18T17:34:30Z&se=2325-02-19T01:34:30Z&spr=https&sv=2022-11-02&sr=c&sig=TCPaBehb1qxd85QxEkP65r2jQ1N3g3mxEWMi1Bp%2FLlA%3D'],
+                tiles: ['https://hilmanpr21.github.io/compass_data_dashboard/source/tiles/westyorkshire_road/{z}/{x}/{y}.pbf'],
                 promoteId: 'TOID' // add this to promote TOID as unique identifier
             });
 
             map.addSource('westyorkshire_lsoa_source',{
                 type: 'vector',
-                tiles: ['https://hilmanpr21.github.io/compass_data_dashboard/source/westyorkshire_lsoa_trial/{z}/{x}/{y}.pbf'],
-
+                tiles: ['https://hilmanpr21.github.io/compass_data_dashboard/source/tiles/westyorkshire_lsoa/{z}/{x}/{y}.pbf'],
                 promoteId: 'LSOA21CD' // as unique identifier for each geometry
             });
 
